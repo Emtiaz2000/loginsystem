@@ -1,0 +1,11 @@
+html{
+    scroll-behavior: smooth;
+}
+body{
+    margin:0px;
+    padding:0px;
+    overflow-x: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
