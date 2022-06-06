@@ -1,4 +1,4 @@
-
+const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
     email:{
         type:String,
         required:true,
+        unique:true,
         validate:{
             validator(v){
                 
@@ -38,9 +39,28 @@ const userSchema = new mongoose.Schema({
                 if(isMatch){
                     return false
                 }
-            }
+            },
+            message:'Please provide strong password'
         }
     }
+
+})
+
+userSchema.pre('save',function(next){
+    let user = this
+      // only hash the password if it has been modified (or is new)
+    if (!user.isModified('password')) return next();
+
+    //hashing the password
+    bcrypt.hash(user.password,12,(err,hash)=>{
+        if(err){
+            return next(err)
+        }
+
+        user.password = hash
+
+        next()
+    })
 
 })
 

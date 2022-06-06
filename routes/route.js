@@ -1,48 +1,77 @@
 
 const User = require('../model/user')
 const route = require('express').Router()
+const passport = require('passport')
+const { loggedInUser, isGuest } = require('../middlewere/isAuthenticated')
 
 //home page
-route.get('/',async(req,res)=>{
-    res.render('home',{
-        title:'Home page',
-        path:'/'
+route.get('/', isGuest, (req, res) => {
+  res.render('home', {
+    title: 'Home page',
+    path: '/'
+  })
+
+})
+
+//login page
+route.get('/login', isGuest, (req, res) => {
+  res.render('pages/loginform', {
+    title: 'Login',
+    path: '/login'
+  })
+})
+
+//register page
+route.get('/register', isGuest, (req, res) => {
+  res.render('pages/register', {
+    title: 'Register page',
+    path: '/register'
+  })
+})
+
+//register user
+route.post('/register', async (req, res) => {
+  console.log(req.body)
+  if (req.body.password === req.body.repassword) {
+    const newUser = new User({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.regemail,
+      password: req.body.password
     })
-    const user = await User.find()
-    console.log(user)
-   })
 
-   //login page
-   route.get('/login',(req,res)=>{
-    res.render('pages/loginform',{
-        title:'Login',
-        path:'/login'
-    })
-   })
+    await newUser.save()
+    res.redirect('/login')
+  }
+})
 
-   //register page
-   route.get('/register',(req,res)=>{
-       res.render('pages/register',{
-           title:'Register page',
-           path:'/register'
-       })
-   })
+//login user
+route.post('/login',
+  passport.authenticate('local', { failureRedirect: '/login', failureMessage: true }),
+  (req, res) => {
+    res.redirect('/user')
+  });
 
-   //register user
-   route.post('/register',async (req,res)=>{
-       console.log(req.body)
-       if(req.body.password === req.body.repassword){
-       const newUser = new User({
-        firstName:req.body.firstName,
-        lastName:req.body.lastName,
-        email:req.body.regemail,
-        password:req.body.password
-       })
+//user profile
+route.get('/user', loggedInUser, (req, res) => {
 
-       await newUser.save()
-       
+  res.render('pages/profile', {
+    title: 'Your Account',
+    path: '/user',
+    user: {
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      email: req.user.email
     }
-   })
+  });
+})
+
+route.post('/logout', function (req, res) {
+  req.logout(function (err) {
+    if (err) { return next(err); }
+    res.redirect('/');
+  });
+});
 
 
 module.exports = route
