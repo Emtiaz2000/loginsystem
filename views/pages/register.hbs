@@ -1,4 +1,10 @@
 <div class="container-div">
+    {{#if errMsg}}
+    <div>
+        {{errMsg}}
+    </div>
+    
+    {{/if}}
     <h2>Register For New Experience!</h2>
     <form class="reg-form" action="/register" method="POST">
     <label for="firstName">First Name</label>

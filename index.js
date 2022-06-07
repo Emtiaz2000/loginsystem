@@ -10,6 +10,7 @@ const session = require('express-session')
 const MongoStore = require('connect-mongo');
 
 
+
 //passing passport to strategy
 localStrategy(passport)
 
@@ -45,15 +46,14 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-    /*  if(req.user){
-     console.log(req.user)
-     } */
-
+   
     next()
 })
 
 //routes
 app.use(route)
+
+
 
 
 app.listen(5000, () => {

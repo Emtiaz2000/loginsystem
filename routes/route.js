@@ -3,7 +3,7 @@ const User = require('../model/user')
 const route = require('express').Router()
 const passport = require('passport')
 const { loggedInUser, isGuest } = require('../middlewere/isAuthenticated')
-
+const {checkField,validateField}= require('../validator/registerValidation')
 //home page
 route.get('/', isGuest, (req, res) => {
   res.render('home', {
@@ -30,7 +30,7 @@ route.get('/register', isGuest, (req, res) => {
 })
 
 //register user
-route.post('/register', async (req, res) => {
+route.post('/register', checkField(),validateField,async (req, res) => {
   console.log(req.body)
   if (req.body.password === req.body.repassword) {
     const newUser = new User({
